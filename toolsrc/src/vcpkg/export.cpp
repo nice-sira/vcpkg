@@ -15,6 +15,10 @@
 #include <vcpkg/base/system.process.h>
 #include <vcpkg/base/util.h>
 
+#include <regex>
+#include <sstream>
+#include <tuple>
+
 namespace vcpkg::Export
 {
     using Dependencies::ExportPlanAction;
@@ -25,7 +29,8 @@ namespace vcpkg::Export
     static std::string create_nuspec_file_contents(const std::string& raw_exported_dir,
                                                    const std::string& targets_redirect_path,
                                                    const std::string& nuget_id,
-                                                   const std::string& nupkg_version)
+                                                   const std::string& nupkg_version,
+                                                   const std::string& dependencies)
     {
         static constexpr auto CONTENT_TEMPLATE = R"(
 <package>
@@ -36,6 +41,7 @@ namespace vcpkg::Export
         <description>
             Vcpkg NuGet export
         </description>
+        @DEPENDENCIES@
     </metadata>
     <files>
         <file src="@RAW_EXPORTED_DIR@\installed\**" target="installed" />
@@ -52,6 +58,7 @@ namespace vcpkg::Export
             Strings::replace_all(std::move(nuspec_file_content), "@RAW_EXPORTED_DIR@", raw_exported_dir);
         nuspec_file_content =
             Strings::replace_all(std::move(nuspec_file_content), "@TARGETS_REDIRECT_PATH@", targets_redirect_path);
+        nuspec_file_content = Strings::replace_all(std::move(nuspec_file_content), "@DEPENDENCIES@", dependencies);
         return nuspec_file_content;
     }
 
@@ -128,7 +135,8 @@ namespace vcpkg::Export
                                     const std::string& nuget_id,
                                     const std::string& nuget_version,
                                     const fs::path& raw_exported_dir,
-                                    const fs::path& output_dir)
+                                    const fs::path& output_dir,
+                                    const std::string& dependencies)
     {
         Files::Filesystem& fs = paths.get_filesystem();
         const fs::path& nuget_exe = paths.get_tool_exe(Tools::NUGET);
@@ -143,8 +151,8 @@ namespace vcpkg::Export
 
         fs.write_contents(targets_redirect, targets_redirect_content, VCPKG_LINE_INFO);
 
-        const std::string nuspec_file_content =
-            create_nuspec_file_contents(raw_exported_dir.string(), targets_redirect.string(), nuget_id, nuget_version);
+        const std::string nuspec_file_content = create_nuspec_file_contents(
+            raw_exported_dir.string(), targets_redirect.string(), nuget_id, nuget_version, dependencies);
         const fs::path nuspec_file_path = paths.buildsystems / "tmp" / "vcpkg.export.nuspec";
         fs.write_contents(nuspec_file_path, nuspec_file_content, VCPKG_LINE_INFO);
 
@@ -225,7 +233,9 @@ namespace vcpkg::Export
         return nullopt;
     }
 
-    void export_integration_files(const fs::path& raw_exported_dir_path, const VcpkgPaths& paths)
+    void export_integration_files(const fs::path& raw_exported_dir_path,
+                                  const VcpkgPaths& paths,
+                                  std::string const& export_id)
     {
         const std::vector<fs::path> integration_files_relative_to_root = {
             {".vcpkg-root"},
@@ -243,7 +253,19 @@ namespace vcpkg::Export
             std::error_code ec;
             fs.create_directories(destination.parent_path(), ec);
             Checks::check_exit(VCPKG_LINE_INFO, !ec);
-            fs.copy_file(source, destination, fs::copy_options::overwrite_existing, ec);
+            auto contents = fs.read_contents(source);
+
+            if (contents.has_value())
+            {
+                auto data = std::move(*contents.get());
+                data = Strings::replace_all(std::move(data), "@PACKAGEID@", export_id);
+
+                fs.write_contents(destination, data);
+            }
+            else
+            {
+                fs.copy_file(source, destination, fs::copy_options::overwrite_existing, ec);
+            }
             Checks::check_exit(VCPKG_LINE_INFO, !ec);
         }
     }
@@ -253,9 +275,11 @@ namespace vcpkg::Export
         bool dry_run = false;
         bool raw = false;
         bool nuget = false;
+        bool nuget_graph = false;
         bool ifw = false;
         bool zip = false;
         bool seven_zip = false;
+        bool nuget_noplan = false;
 
         Optional<std::string> maybe_output;
 
@@ -270,6 +294,8 @@ namespace vcpkg::Export
     static constexpr StringLiteral OPTION_DRY_RUN = "--dry-run";
     static constexpr StringLiteral OPTION_RAW = "--raw";
     static constexpr StringLiteral OPTION_NUGET = "--nuget";
+    static constexpr StringLiteral OPTION_NUGET_GRAPH = "--nuget-graph";
+    static constexpr StringLiteral OPTION_NUGET_NOPLAN = "--no-plan";
     static constexpr StringLiteral OPTION_IFW = "--ifw";
     static constexpr StringLiteral OPTION_ZIP = "--zip";
     static constexpr StringLiteral OPTION_SEVEN_ZIP = "--7zip";
@@ -281,10 +307,12 @@ namespace vcpkg::Export
     static constexpr StringLiteral OPTION_IFW_CONFIG_FILE_PATH = "--ifw-configuration-file-path";
     static constexpr StringLiteral OPTION_IFW_INSTALLER_FILE_PATH = "--ifw-installer-file-path";
 
-    static constexpr std::array<CommandSwitch, 6> EXPORT_SWITCHES = {{
+    static constexpr std::array<CommandSwitch, 8> EXPORT_SWITCHES = {{
         {OPTION_DRY_RUN, "Do not actually export"},
         {OPTION_RAW, "Export to an uncompressed directory"},
         {OPTION_NUGET, "Export a NuGet package"},
+        {OPTION_NUGET_GRAPH, "Export NuGet package with dependenceis set and the dependencies as nuget packages"},
+        {OPTION_NUGET_NOPLAN, "Export package without dependencies"},
         {OPTION_IFW, "Export to an IFW-based installer"},
         {OPTION_ZIP, "Export to a zip file"},
         {OPTION_SEVEN_ZIP, "Export to a 7zip (.7z) file"},
@@ -323,13 +351,15 @@ namespace vcpkg::Export
         ret.dry_run = options.switches.find(OPTION_DRY_RUN) != options.switches.cend();
         ret.raw = options.switches.find(OPTION_RAW) != options.switches.cend();
         ret.nuget = options.switches.find(OPTION_NUGET) != options.switches.cend();
+        ret.nuget_graph = options.switches.find(OPTION_NUGET_GRAPH) != options.switches.cend();
         ret.ifw = options.switches.find(OPTION_IFW) != options.switches.cend();
         ret.zip = options.switches.find(OPTION_ZIP) != options.switches.cend();
         ret.seven_zip = options.switches.find(OPTION_SEVEN_ZIP) != options.switches.cend();
+        ret.nuget_noplan = options.switches.find(OPTION_NUGET_NOPLAN) != options.switches.cend();
 
         ret.maybe_output = maybe_lookup(options.settings, OPTION_OUTPUT);
 
-        if (!ret.raw && !ret.nuget && !ret.ifw && !ret.zip && !ret.seven_zip && !ret.dry_run)
+        if (!ret.raw && !ret.nuget && !ret.nuget_graph && !ret.ifw && !ret.zip && !ret.seven_zip && !ret.dry_run)
         {
             System::print2(System::Color::error,
                            "Must provide at least one export type: --raw --nuget --ifw --zip --7zip\n");
@@ -383,9 +413,14 @@ namespace vcpkg::Export
                             {OPTION_IFW_CONFIG_FILE_PATH, ret.ifw_options.maybe_config_file_path},
                             {OPTION_IFW_INSTALLER_FILE_PATH, ret.ifw_options.maybe_installer_file_path},
                         });
+        options_implies(OPTION_NUGET_GRAPH,
+                        ret.nuget_graph,
+                        {
+                            {OPTION_NUGET_VERSION, ret.maybe_nuget_version},
+                        });
 #if defined(_MSC_VER) && _MSC_VER <= 1900
 #pragma warning(pop)
-#endif
+#endif                        
         return ret;
     }
 
@@ -438,7 +473,7 @@ namespace vcpkg::Export
         }
 
         // Copy files needed for integration
-        export_integration_files(raw_exported_dir_path, paths);
+        export_integration_files(raw_exported_dir_path, paths, export_id);
 
         if (opts.raw)
         {
@@ -456,7 +491,7 @@ namespace vcpkg::Export
             const std::string nuget_id = opts.maybe_nuget_id.value_or(raw_exported_dir_path.filename().string());
             const std::string nuget_version = opts.maybe_nuget_version.value_or("1.0.0");
             const fs::path output_path =
-                do_nuget_export(paths, nuget_id, nuget_version, raw_exported_dir_path, export_to_path);
+                do_nuget_export(paths, nuget_id, nuget_version, raw_exported_dir_path, export_to_path, "");
             System::print2(System::Color::success, "NuGet package exported at: ", output_path.u8string(), "\n");
 
             System::printf(R"(
@@ -490,6 +525,107 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
         {
             fs.remove_all(raw_exported_dir_path, VCPKG_LINE_INFO);
         }
+    }
+
+    static std::string createNugetName(const ExportPlanAction& pkg)
+    {
+        auto version = pkg.core_paragraph().value_or_exit(VCPKG_LINE_INFO).version;
+        auto name = pkg.spec.name();
+        auto triplet = pkg.spec.triplet().to_string();
+        return name + "_" + version + "_" + triplet;
+    }
+
+    static std::string createNugetDependencies(const std::vector<vcpkg::Dependencies::ExportPlanAction>& dependencies,
+                                               const std::string& exportId)
+    {
+        if (dependencies.size() <= 1) return "";
+        std::stringstream ss;
+        ss << "<dependencies>" << std::endl;
+        for (auto& pkg : dependencies)
+        {
+            if (pkg.request_type == RequestType::AUTO_SELECTED)
+            {
+                ss << "<dependency id=\""
+                   << createNugetName(pkg)
+                   << "\" version=\"" << exportId << "\""
+                   << "/>" << std::endl;
+            }
+        }
+        ss << "</dependencies>";
+        return ss.str();
+    }
+
+    static void handle_nuget_withdeps_export(Span<const ExportPlanAction> export_plan,
+                                             const ExportArguments& opts,
+                                             const std::string& export_id,
+                                             const VcpkgPaths& paths)
+    {
+        // sanity check
+        if (!opts.nuget_graph)
+        {
+            return;
+        }
+
+        Files::Filesystem& fs = paths.get_filesystem();
+        const fs::path export_to_path = paths.root;
+        std::error_code ec;
+
+        const StatusParagraphs status_db = database_load_check(paths);
+
+        // execute the plan
+        for (const ExportPlanAction& action : export_plan)
+        {
+            if (action.plan_type != ExportPlanType::ALREADY_BUILT)
+            {
+                Checks::unreachable(VCPKG_LINE_INFO);
+            }
+            const fs::path raw_exported_dir_path = export_to_path / export_id / action.spec.name();
+            fs.remove_all(raw_exported_dir_path, ec);
+            fs.create_directory(raw_exported_dir_path, ec);
+
+            const std::string display_name = action.spec.to_string();
+            System::print2("Exporting package ", display_name, "...\n");
+
+            const BinaryParagraph& binary_paragraph = action.core_paragraph().value_or_exit(VCPKG_LINE_INFO);
+
+            const InstallDir dirs = InstallDir::from_destination_root(
+                raw_exported_dir_path / "installed",
+                action.spec.triplet().to_string(),
+                raw_exported_dir_path / "installed" / "vcpkg" / "info" / (binary_paragraph.fullstem() + ".list"));
+
+            Install::install_files_and_write_listfile(paths.get_filesystem(), paths.package_dir(action.spec), dirs);
+
+            const std::string nuget_id = createNugetName(action);
+            // because nuget treats "-" as a pre release (meaning lower version) we replace it with 00 so internal
+            // versioning is clearly visible in resulting package
+            const std::string nuget_version = opts.maybe_nuget_version.value_or("1.0.0");
+            auto depList = Dependencies::create_export_plan({action.spec}, status_db);
+            const std::string dependencies = createNugetDependencies(depList, nuget_version);
+            // Copy files needed for integration
+            export_integration_files(
+                raw_exported_dir_path,
+                paths,
+                nuget_id);
+
+            const fs::path output_path = do_nuget_export(
+                paths,
+                nuget_id,
+                nuget_version,
+                raw_exported_dir_path,
+                export_to_path,
+                dependencies);
+            System::print2(System::Color::success, "NuGet package exported at: ", output_path.u8string(), "\n");
+
+            System::printf(R"(
+With a project open, go to Tools->NuGet Package Manager->Package Manager Console and paste:
+Install-Package %s -Source "%s"
+)"
+                           "\n\n",
+                           nuget_id,
+                           output_path.parent_path().u8string());
+        }
+
+        System::print2("Packing nuget package...\n");
     }
 
     void perform_and_exit(const VcpkgCmdArguments& args, const VcpkgPaths& paths, const Triplet& default_triplet)
@@ -550,6 +686,19 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
         if (opts.raw || opts.nuget || opts.zip || opts.seven_zip)
         {
             handle_raw_based_export(export_plan, opts, export_id, paths);
+        }
+
+        if (opts.nuget_graph)
+        {
+            if (opts.nuget_noplan)
+            {
+                export_plan.erase(export_plan.begin(), export_plan.end() - 1);
+                handle_nuget_withdeps_export(export_plan, opts, export_id, paths);
+            }
+            else
+            {
+                handle_nuget_withdeps_export(export_plan, opts, export_id, paths);
+            }
         }
 
         if (opts.ifw)
