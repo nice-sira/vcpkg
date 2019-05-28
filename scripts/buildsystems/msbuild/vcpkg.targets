@@ -1,6 +1,21 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
     <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
+    <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">v142_x86-windows</@PACKAGEID@VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
+    <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">v141_x86-windows</@PACKAGEID@VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
+    <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">v140_x86-windows</@PACKAGEID@VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
     <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">x86-windows</@PACKAGEID@VcpkgTriplet>
   </PropertyGroup>
 
@@ -22,6 +37,16 @@
   <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64||'">
     <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
     <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">v142_x64-windows</@PACKAGEID@VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64||'">
+    <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
+    <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">v141_x64-windows</@PACKAGEID@VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64||'">
+    <@PACKAGEID@VcpkgEnabled Condition="'$(@PACKAGEID@VcpkgEnabled)' == ''">true</@PACKAGEID@VcpkgEnabled>
+    <@PACKAGEID@VcpkgTriplet Condition="'$(@PACKAGEID@VcpkgTriplet)' == ''">v140_x64-windows</@PACKAGEID@VcpkgTriplet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'arm||'">
