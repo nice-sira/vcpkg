@@ -258,7 +258,10 @@ namespace vcpkg::Export
             if (contents.has_value())
             {
                 auto data = std::move(*contents.get());
-                data = Strings::replace_all(std::move(data), "@PACKAGEID@", export_id);
+                std::string varName = export_id;
+                varName = Strings::replace_all(std::move(varName), ".", "_");
+                varName = Strings::replace_all(std::move(varName), "-", "_");
+                data = Strings::replace_all(std::move(data), "@PACKAGEID@", varName);
 
                 fs.write_contents(destination, data);
             }
@@ -545,9 +548,7 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
         {
             if (pkg.request_type == RequestType::AUTO_SELECTED)
             {
-                ss << "<dependency id=\""
-                   << createNugetName(pkg)
-                   << "\" version=\"" << exportId << "\""
+                ss << "<dependency id=\"" << createNugetName(pkg) << "\" version=\"" << exportId << "\""
                    << "/>" << std::endl;
             }
         }
@@ -555,10 +556,10 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
         return ss.str();
     }
 
-    static void handle_nuget_withdeps_export(Span<const ExportPlanAction> export_plan,
-                                             const ExportArguments& opts,
-                                             const std::string& export_id,
-                                             const VcpkgPaths& paths)
+    static void handle_nuget_graph_export(Span<const ExportPlanAction> export_plan,
+                                          const ExportArguments& opts,
+                                          const std::string& export_id,
+                                          const VcpkgPaths& paths)
     {
         // sanity check
         if (!opts.nuget_graph)
@@ -602,18 +603,10 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
             auto depList = Dependencies::create_export_plan({action.spec}, status_db);
             const std::string dependencies = createNugetDependencies(depList, nuget_version);
             // Copy files needed for integration
-            export_integration_files(
-                raw_exported_dir_path,
-                paths,
-                nuget_id);
+            export_integration_files(raw_exported_dir_path, paths, nuget_id);
 
-            const fs::path output_path = do_nuget_export(
-                paths,
-                nuget_id,
-                nuget_version,
-                raw_exported_dir_path,
-                export_to_path,
-                dependencies);
+            const fs::path output_path =
+                do_nuget_export(paths, nuget_id, nuget_version, raw_exported_dir_path, export_to_path, dependencies);
             System::print2(System::Color::success, "NuGet package exported at: ", output_path.u8string(), "\n");
 
             System::printf(R"(
@@ -624,6 +617,7 @@ Install-Package %s -Source "%s"
                            nuget_id,
                            output_path.parent_path().u8string());
         }
+        fs.remove_all(export_to_path / export_id, ec);
 
         System::print2("Packing nuget package...\n");
     }
@@ -693,11 +687,11 @@ Install-Package %s -Source "%s"
             if (opts.nuget_noplan)
             {
                 export_plan.erase(export_plan.begin(), export_plan.end() - 1);
-                handle_nuget_withdeps_export(export_plan, opts, export_id, paths);
+                handle_nuget_graph_export(export_plan, opts, export_id, paths);
             }
             else
             {
-                handle_nuget_withdeps_export(export_plan, opts, export_id, paths);
+                handle_nuget_graph_export(export_plan, opts, export_id, paths);
             }
         }
 
