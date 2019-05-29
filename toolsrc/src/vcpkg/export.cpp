@@ -304,6 +304,7 @@ namespace vcpkg::Export
     static constexpr StringLiteral OPTION_SEVEN_ZIP = "--7zip";
     static constexpr StringLiteral OPTION_NUGET_ID = "--nuget-id";
     static constexpr StringLiteral OPTION_NUGET_VERSION = "--nuget-version";
+    static constexpr StringLiteral OPTION_NUGET_GRAPH_VERSION = "--nuget-graph-version";
     static constexpr StringLiteral OPTION_IFW_REPOSITORY_URL = "--ifw-repository-url";
     static constexpr StringLiteral OPTION_IFW_PACKAGES_DIR_PATH = "--ifw-packages-directory-path";
     static constexpr StringLiteral OPTION_IFW_REPOSITORY_DIR_PATH = "--ifw-repository-directory-path";
@@ -321,10 +322,11 @@ namespace vcpkg::Export
         {OPTION_SEVEN_ZIP, "Export to a 7zip (.7z) file"},
     }};
 
-    static constexpr std::array<CommandSetting, 8> EXPORT_SETTINGS = {{
+    static constexpr std::array<CommandSetting, 9> EXPORT_SETTINGS = {{
         {OPTION_OUTPUT, "Specify the output name (used to construct filename)"},
         {OPTION_NUGET_ID, "Specify the id for the exported NuGet package (overrides --output)"},
         {OPTION_NUGET_VERSION, "Specify the version for the exported NuGet package"},
+        {OPTION_NUGET_GRAPH_VERSION, "Specify the version for the exported NuGet package"},
         {OPTION_IFW_REPOSITORY_URL, "Specify the remote repository URL for the online installer"},
         {OPTION_IFW_PACKAGES_DIR_PATH, "Specify the temporary directory path for the repacked packages"},
         {OPTION_IFW_REPOSITORY_DIR_PATH, "Specify the directory path for the exported repository"},
@@ -419,7 +421,7 @@ namespace vcpkg::Export
         options_implies(OPTION_NUGET_GRAPH,
                         ret.nuget_graph,
                         {
-                            {OPTION_NUGET_VERSION, ret.maybe_nuget_version},
+                            {OPTION_NUGET_GRAPH_VERSION, ret.maybe_nuget_version},
                         });
 #if defined(_MSC_VER) && _MSC_VER <= 1900
 #pragma warning(pop)
