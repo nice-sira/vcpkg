@@ -253,23 +253,43 @@ namespace vcpkg::Export
             std::error_code ec;
             fs.create_directories(destination.parent_path(), ec);
             Checks::check_exit(VCPKG_LINE_INFO, !ec);
-            auto contents = fs.read_contents(source);
 
-            if (contents.has_value())
-            {
-                auto data = std::move(*contents.get());
-                std::string varName = export_id;
-                varName = Strings::replace_all(std::move(varName), ".", "_");
-                varName = Strings::replace_all(std::move(varName), "-", "_");
-                data = Strings::replace_all(std::move(data), "@PACKAGEID@", varName);
-
-                fs.write_contents(destination, data);
-            }
-            else
-            {
-                fs.copy_file(source, destination, fs::copy_options::overwrite_existing, ec);
-            }
+            fs.copy_file(source, destination, fs::copy_options::overwrite_existing, ec);
             Checks::check_exit(VCPKG_LINE_INFO, !ec);
+        }
+    }
+
+    void export_integration_files_nuget_graph(const fs::path& raw_exported_dir_path,
+                                              const VcpkgPaths& paths,
+                                              std::string const& export_id)
+    {
+        export_integration_files(raw_exported_dir_path, paths, export_id);
+
+        const std::vector<std::pair<fs::path, fs::path>> renameMapping = {
+            {{paths.root            / "scripts" / "buildsystems" / "msbuild" / "nuget_graph_applocal.ps1"},
+             {raw_exported_dir_path / "scripts" / "buildsystems" / "msbuild" / "applocal.ps1"}},
+        };
+
+        for (const std::pair<fs::path, fs::path>& file : renameMapping)
+        {
+            Files::Filesystem& fs = paths.get_filesystem();
+            std::error_code ec;
+            fs.copy_file(file.first, file.second, fs::copy_options::overwrite_existing, ec);
+            Checks::check_exit(VCPKG_LINE_INFO, !ec);
+        }
+        
+        Files::Filesystem& fs = paths.get_filesystem();
+        auto targetsFile = raw_exported_dir_path / "scripts" / "buildsystems" / "msbuild" / "vcpkg.targets";
+        auto contents = fs.read_contents(targetsFile);
+
+        if (contents.has_value())
+        {
+            auto data = std::move(*contents.get());
+            std::string varName = export_id;
+            varName = Strings::replace_all(std::move(varName), ".", "_");
+            varName = Strings::replace_all(std::move(varName), "-", "_");
+            data = Strings::replace_all(std::move(data), "_PACKAGEID_", varName);
+            fs.write_contents(targetsFile, data);
         }
     }
 
@@ -605,7 +625,7 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
             auto depList = Dependencies::create_export_plan({action.spec}, status_db);
             const std::string dependencies = createNugetDependencies(depList, nuget_version);
             // Copy files needed for integration
-            export_integration_files(raw_exported_dir_path, paths, nuget_id);
+            export_integration_files_nuget_graph(raw_exported_dir_path, paths, nuget_id);
 
             const fs::path output_path =
                 do_nuget_export(paths, nuget_id, nuget_version, raw_exported_dir_path, export_to_path, dependencies);
