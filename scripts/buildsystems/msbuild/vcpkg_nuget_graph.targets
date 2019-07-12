@@ -1,0 +1,132 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">v142_x86-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">v141_x86-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">v140_x86-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">x86-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'Win32|Windows Store|10.0'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">x86-uwp</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == '||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">x86-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == '|Windows Store|10.0'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">x86-uwp</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">v142_x64-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">v141_x64-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">v140_x64-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'arm||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">arm-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'arm64||'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">arm64-windows</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>  
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'x64|Windows Store|10.0'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">x64-uwp</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'arm|Windows Store|10.0'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">arm-uwp</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)|$(ApplicationType)|$(ApplicationTypeRevision)' == 'arm64|Windows Store|10.0'">
+    <_PACKAGEID_VcpkgEnabled Condition="'$(_PACKAGEID_VcpkgEnabled)' == ''">true</_PACKAGEID_VcpkgEnabled>
+    <_PACKAGEID_VcpkgTriplet Condition="'$(_PACKAGEID_VcpkgTriplet)' == ''">arm64-uwp</_PACKAGEID_VcpkgTriplet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(_PACKAGEID_VcpkgEnabled)' == 'true'">
+    <_PACKAGEID_VcpkgConfiguration Condition="'$(_PACKAGEID_VcpkgConfiguration)' == ''">$(Configuration)</_PACKAGEID_VcpkgConfiguration>
+    <_PACKAGEID_VcpkgNormalizedConfiguration Condition="$(_PACKAGEID_VcpkgConfiguration.StartsWith('Debug'))">Debug</_PACKAGEID_VcpkgNormalizedConfiguration>
+    <_PACKAGEID_VcpkgNormalizedConfiguration Condition="$(_PACKAGEID_VcpkgConfiguration.StartsWith('Release')) or '$(_PACKAGEID_VcpkgConfiguration)' == 'RelWithDebInfo' or '$(_PACKAGEID_VcpkgConfiguration)' == 'MinSizeRel'">Release</_PACKAGEID_VcpkgNormalizedConfiguration>
+    <_PACKAGEID_VcpkgRoot Condition="'$(_PACKAGEID_VcpkgRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), .vcpkg-root))\installed\$(_PACKAGEID_VcpkgTriplet)\</_PACKAGEID_VcpkgRoot>
+    <VcpkgApplocalDeps Condition="'$(VcpkgApplocalDeps)' == ''">true</VcpkgApplocalDeps>
+    <!-- Deactivate Autolinking if lld is used as a linker. (Until a better way to solve the problem is found!). 
+    Tried to add /lib as a parameter to the linker call but was unable to find a way to pass it as the first parameter. -->
+    <VcpkgAutoLink Condition="'$(UseLldLink)' == 'true' and '$(VcpkgAutoLink)' == ''">false</VcpkgAutoLink>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup Condition="'$(_PACKAGEID_VcpkgEnabled)' == 'true'">
+    <Link>
+      <AdditionalDependencies Condition="'$(_PACKAGEID_VcpkgNormalizedConfiguration)' == 'Debug' and '$(VcpkgAutoLink)' != 'false'">%(AdditionalDependencies);$(_PACKAGEID_VcpkgRoot)debug\lib\*.lib</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(_PACKAGEID_VcpkgNormalizedConfiguration)' == 'Release' and '$(VcpkgAutoLink)' != 'false'">%(AdditionalDependencies);$(_PACKAGEID_VcpkgRoot)lib\*.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(_PACKAGEID_VcpkgNormalizedConfiguration)' == 'Release'">%(AdditionalLibraryDirectories);$(_PACKAGEID_VcpkgRoot)lib;$(_PACKAGEID_VcpkgRoot)lib\manual-link</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(_PACKAGEID_VcpkgNormalizedConfiguration)' == 'Debug'">%(AdditionalLibraryDirectories);$(_PACKAGEID_VcpkgRoot)debug\lib;$(_PACKAGEID_VcpkgRoot)debug\lib\manual-link</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(_PACKAGEID_VcpkgRoot)include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(_PACKAGEID_VcpkgRoot)include</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+
+  <Target Name="_PACKAGEID_VcpkgTripletSelection" BeforeTargets="ClCompile">
+    <Message Text="Using triplet &quot;$(_PACKAGEID_VcpkgTriplet)&quot; from &quot;$(_PACKAGEID_VcpkgRoot)&quot;" Importance="Normal" Condition="'$(_PACKAGEID_VcpkgEnabled)' == 'true'"/>
+    <Message Text="Not using Vcpkg because _PACKAGEID_VcpkgEnabled is &quot;$(_PACKAGEID_VcpkgEnabled)&quot;" Importance="Normal" Condition="'$(_PACKAGEID_VcpkgEnabled)' != 'true'"/>
+    <Message Text="Vcpkg is unable to link because we cannot decide between Release and Debug libraries. Please define the property _PACKAGEID_VcpkgConfiguration to be 'Release' or 'Debug' (currently '$(_PACKAGEID_VcpkgConfiguration)')." Importance="High" Condition="'$(_PACKAGEID_VcpkgEnabled)' == 'true' and '$(_PACKAGEID_VcpkgNormalizedConfiguration)' == ''"/>
+  </Target>
+
+  <ItemGroup Condition="$(_PACKAGEID_VcpkgConfiguration.StartsWith('Debug'))">
+    <VCPKGBinaries Include="$(_PACKAGEID_VcpkgRoot)debug\bin\*.*"/>
+  </ItemGroup>
+  <ItemGroup Condition="$(_PACKAGEID_VcpkgConfiguration.StartsWith('Release'))">
+    <VCPKGBinaries Include="$(_PACKAGEID_VcpkgRoot)bin\*.*"/>
+  </ItemGroup>
+
+  <Target Name="_PACKAGEID_AppLocalFromInstalled" AfterTargets="CopyFilesToOutputDirectory" BeforeTargets="CopyLocalFilesOutputGroup;RegisterOutput" Condition="'$(_PACKAGEID_VcpkgEnabled)' == 'true'">
+    <WriteLinesToFile
+    File="$(TLogLocation)$(ProjectName).write.1u.tlog"
+    Lines="^$(TargetPath);$([System.IO.Path]::Combine($(ProjectDir),$(IntDir)))vcpkg.applocal.log" Encoding="Unicode"/>
+    <Copy Condition="'$(TargetExt)' == '.exe' or '$(TargetExt)'=='.dll'"
+      SourceFiles="@(VCPKGBinaries)"
+      DestinationFolder="$(TargetDir)"
+    />
+    <ReadLinesFromFile File="$(IntDir)vcpkg.applocal.log">
+      <Output TaskParameter="Lines" ItemName="_PACKAGEID_VcpkgAppLocalDLLs" />
+    </ReadLinesFromFile>
+    <Message Text="@(_PACKAGEID_VcpkgAppLocalDLLs,'%0A')" Importance="Normal" />
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(_PACKAGEID_VcpkgAppLocalDLLs)" />
+    </ItemGroup>
+  </Target>
+</Project>

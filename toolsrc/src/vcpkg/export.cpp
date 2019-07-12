@@ -266,8 +266,8 @@ namespace vcpkg::Export
         export_integration_files(raw_exported_dir_path, paths, export_id);
 
         const std::vector<std::pair<fs::path, fs::path>> renameMapping = {
-            {{paths.root            / "scripts" / "buildsystems" / "msbuild" / "nuget_graph_applocal.ps1"},
-             {raw_exported_dir_path / "scripts" / "buildsystems" / "msbuild" / "applocal.ps1"}},
+            {{paths.root / "scripts" / "buildsystems" / "msbuild" / "vcpkg_nuget_graph.targets"},
+             {raw_exported_dir_path / "scripts" / "buildsystems" / "msbuild" / "vcpkg.targets"}},
         };
 
         for (const std::pair<fs::path, fs::path>& file : renameMapping)
