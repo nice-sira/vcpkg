@@ -49,12 +49,12 @@ function(vcpkg_from_git)
     message(FATAL_ERROR "The git url must be specified")
   endif()
 
-  if( NOT _vdud_URL MATCHES "^https:")
+#  if( NOT _vdud_URL MATCHES "^https:")
     # vcpkg_from_git does not support a SHA256 parameter because hashing the git archive is
     # not stable across all supported platforms.  The tradeoff is to require https to download
     # and the ref to be the git sha (i.e. not things that can change like a label)
-    message(FATAL_ERROR "The git url must be https")
-  endif()
+#    message(FATAL_ERROR "The git url must be https")
+#  endif()
 
   if(NOT DEFINED _vdud_REF)
     message(FATAL_ERROR "The git ref must be specified.")
