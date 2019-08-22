@@ -235,7 +235,7 @@ namespace vcpkg::Export
 
     void export_integration_files(const fs::path& raw_exported_dir_path,
                                   const VcpkgPaths& paths,
-                                  std::string const& export_id)
+                                  std::string const&)
     {
         const std::vector<fs::path> integration_files_relative_to_root = {
             {".vcpkg-root"},
@@ -289,7 +289,8 @@ namespace vcpkg::Export
             varName = Strings::replace_all(std::move(varName), ".", "_");
             varName = Strings::replace_all(std::move(varName), "-", "_");
             data = Strings::replace_all(std::move(data), "_PACKAGEID_", varName);
-            fs.write_contents(targetsFile, data);
+            std::error_code ec;
+            fs.write_contents(targetsFile, data, VCPKG_LINE_INFO);
         }
     }
 
@@ -603,7 +604,7 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
                 Checks::unreachable(VCPKG_LINE_INFO);
             }
             const fs::path raw_exported_dir_path = export_to_path / export_id / action.spec.name();
-            fs.remove_all(raw_exported_dir_path, ec);
+            fs.remove_all(raw_exported_dir_path, VCPKG_LINE_INFO);
             fs.create_directory(raw_exported_dir_path, ec);
 
             const std::string display_name = action.spec.to_string();
@@ -639,7 +640,7 @@ Install-Package %s -Source "%s"
                            nuget_id,
                            output_path.parent_path().u8string());
         }
-        fs.remove_all(export_to_path / export_id, ec);
+        fs.remove_all(export_to_path / export_id, VCPKG_LINE_INFO);
 
         System::print2("Packing nuget package...\n");
     }
