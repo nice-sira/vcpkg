@@ -114,19 +114,9 @@
   </ItemGroup>
 
   <Target Name="_PACKAGEID_AppLocalFromInstalled" AfterTargets="CopyFilesToOutputDirectory" BeforeTargets="CopyLocalFilesOutputGroup;RegisterOutput" Condition="'$(_PACKAGEID_VcpkgEnabled)' == 'true'">
-    <WriteLinesToFile
-    File="$(TLogLocation)$(ProjectName).write.1u.tlog"
-    Lines="^$(TargetPath);$([System.IO.Path]::Combine($(ProjectDir),$(IntDir)))vcpkg.applocal.log" Encoding="Unicode"/>
     <Copy Condition="'$(TargetExt)' == '.exe' or '$(TargetExt)'=='.dll'"
       SourceFiles="@(VCPKGBinaries)"
       DestinationFolder="$(TargetDir)"
     />
-    <ReadLinesFromFile File="$(IntDir)vcpkg.applocal.log">
-      <Output TaskParameter="Lines" ItemName="_PACKAGEID_VcpkgAppLocalDLLs" />
-    </ReadLinesFromFile>
-    <Message Text="@(_PACKAGEID_VcpkgAppLocalDLLs,'%0A')" Importance="Normal" />
-    <ItemGroup>
-      <ReferenceCopyLocalPaths Include="@(_PACKAGEID_VcpkgAppLocalDLLs)" />
-    </ItemGroup>
   </Target>
 </Project>
