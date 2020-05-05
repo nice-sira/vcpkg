@@ -559,7 +559,8 @@ With a project open, go to Tools->NuGet Package Manager->Package Manager Console
         auto version = pkg.core_paragraph().value_or_exit(VCPKG_LINE_INFO).version;
         auto name = pkg.spec.name();
         auto triplet = pkg.spec.triplet().to_string();
-        return name + "_" + version + "_" + triplet;
+        //return name + "_" + version + "_" + triplet;
+        return name;
     }
 
     static std::string createNugetDependencies(const std::vector<vcpkg::Dependencies::ExportPlanAction>& dependencies,
